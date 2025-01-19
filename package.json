@@ -1,0 +1,68 @@
+{
+  "name": "@fimbul-works/vec-color",
+  "description": "A color library built on top of @fimbul-works/vec",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/vec-color#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/vec-color.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/vec-color/issues"
+  },
+  "keywords": [
+    "color",
+    "colors",
+    "rgb",
+    "hsl",
+    "cmyk",
+    "color-conversion",
+    "color-space",
+    "color-manipulation",
+    "color-blending",
+    "color-analysis",
+    "color-palette",
+    "color-accessibility",
+    "wcag",
+    "typescript",
+    "color-utils",
+    "blend-modes",
+    "gradients",
+    "cosine-gradient",
+    "color-contrast",
+    "color-transform"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "API.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc --build --clean && tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@fimbul-works/vec": "^1.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "typescript": "^5.7.3"
+  }
+}
