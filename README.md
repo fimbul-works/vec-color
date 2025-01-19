@@ -7,7 +7,7 @@ A comprehensive, type-safe color manipulation library for TypeScript that provid
 
 ## Features
 
-. 🎨 Multiple color space support (RGB, HSL, CMYK, XYZ, LAB)
+- 🎨 Multiple color space support (RGB, HSL, CMYK, XYZ, LAB)
 - 🎯 Fully type-safe with TypeScript
 - 🎭 Advanced color blending modes
 - ♿ WCAG accessibility utilities

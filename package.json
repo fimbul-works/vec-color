@@ -1,7 +1,7 @@
 {
   "name": "@fimbul-works/vec-color",
-  "description": "A color library built on top of @fimbul-works/vec",
-  "version": "1.0.0",
+  "description": "A comprehensive, type-safe color manipulation library for TypeScript that provides a wide range of color space conversions, blending operations, and accessibility utilities.",
+  "version": "1.0.2",
   "type": "module",
   "private": false,
   "license": "MIT",
