@@ -64,9 +64,7 @@ export function parseRGB(rgb: string): Vec3 {
  * @throws Error if HSL string is invalid
  */
 export function parseHSL(hsl: string): Vec3 {
-  const match = hsl.match(
-    /^hsla?\((\d+),\s*(\d+)%,\s*(\d+)%(?:,\s*[\d.]+)?\)$/,
-  );
+  const match = hsl.match(/^hsla?\((\d+),\s*(\d+)%,\s*(\d+)%(?:,\s*[\d.]+)?\)$/);
   if (!match) {
     throw new Error("Invalid HSL/HSLA string");
   }
@@ -107,13 +105,13 @@ export function parseColor(color: string): Vec3 {
  * @returns Hex color string
  */
 export function toHex(color: Vec3, includeHash = true): string {
-  const r = Math.round(color.x * 255)
+  const r = Math.round(color.r * 255)
     .toString(16)
     .padStart(2, "0");
-  const g = Math.round(color.y * 255)
+  const g = Math.round(color.g * 255)
     .toString(16)
     .padStart(2, "0");
-  const b = Math.round(color.z * 255)
+  const b = Math.round(color.b * 255)
     .toString(16)
     .padStart(2, "0");
 
@@ -127,13 +125,11 @@ export function toHex(color: Vec3, includeHash = true): string {
  * @returns RGB or RGBA color string
  */
 export function toRGB(color: Vec3, alpha?: number): string {
-  const r = Math.round(color.x * 255);
-  const g = Math.round(color.y * 255);
-  const b = Math.round(color.z * 255);
+  const r = Math.round(color.r * 255);
+  const g = Math.round(color.g * 255);
+  const b = Math.round(color.b * 255);
 
-  return alpha !== undefined
-    ? `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})`
-    : `rgb(${r}, ${g}, ${b})`;
+  return alpha !== undefined ? `rgba(${r}, ${g}, ${b}, ${alpha.toFixed(3)})` : `rgb(${r}, ${g}, ${b})`;
 }
 
 /**
@@ -144,13 +140,11 @@ export function toRGB(color: Vec3, alpha?: number): string {
  */
 export function toHSL(color: Vec3, alpha?: number): string {
   const hsl = rgbToHSL(color);
-  const h = Math.round(hsl.x * 360);
-  const s = Math.round(hsl.y * 100);
-  const l = Math.round(hsl.z * 100);
+  const h = Math.round(hsl.r * 360);
+  const s = Math.round(hsl.g * 100);
+  const l = Math.round(hsl.b * 100);
 
-  return alpha !== undefined
-    ? `hsla(${h}, ${s}%, ${l}%, ${alpha.toFixed(3)})`
-    : `hsl(${h}, ${s}%, ${l}%)`;
+  return alpha !== undefined ? `hsla(${h}, ${s}%, ${l}%, ${alpha.toFixed(3)})` : `hsl(${h}, ${s}%, ${l}%)`;
 }
 
 /**
@@ -159,10 +153,7 @@ export function toHSL(color: Vec3, alpha?: number): string {
  * @param options - Formatting options
  * @returns Color string in specified format
  */
-export function colorToString(
-  color: Vec3,
-  options: ColorStringOptions,
-): string {
+export function colorToString(color: Vec3, options: ColorStringOptions): string {
   switch (options.format) {
     case "hex":
       return toHex(color, options.includeHash);

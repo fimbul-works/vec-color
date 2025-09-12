@@ -7,7 +7,7 @@ import { Vec3, Vec4 } from "@fimbul-works/vec";
  * @returns Vec4 containing RGBA values
  */
 export function withAlpha(color: Vec3, alpha = 1): Vec4 {
-  return new Vec4(color.x, color.y, color.z, alpha);
+  return new Vec4(color.r, color.g, color.b, alpha);
 }
 
 /**
@@ -17,7 +17,7 @@ export function withAlpha(color: Vec3, alpha = 1): Vec4 {
  * @returns Vec4 containing premultiplied RGBA values
  */
 export function toPremultipliedAlpha(color: Vec3, alpha = 1): Vec4 {
-  return new Vec4(color.x * alpha, color.y * alpha, color.z * alpha, alpha);
+  return new Vec4(color.r * alpha, color.g * alpha, color.b * alpha, alpha);
 }
 
 /**
@@ -26,15 +26,8 @@ export function toPremultipliedAlpha(color: Vec3, alpha = 1): Vec4 {
  * @returns [Vec3, number] tuple containing RGB color and alpha value
  */
 export function fromPremultipliedAlpha(premultiplied: Vec4): [Vec3, number] {
-  const alpha = premultiplied.w;
+  const alpha = premultiplied.a;
   if (alpha === 0) return [new Vec3(0, 0, 0), 0];
 
-  return [
-    new Vec3(
-      premultiplied.x / alpha,
-      premultiplied.y / alpha,
-      premultiplied.z / alpha,
-    ),
-    alpha,
-  ];
+  return [new Vec3(premultiplied.r / alpha, premultiplied.g / alpha, premultiplied.b / alpha), alpha];
 }

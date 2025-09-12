@@ -11,7 +11,7 @@ import { mix } from "./blend";
  * @returns Vec3 containing grayscale RGB values
  */
 export function grayscale(color: Vec3): Vec3 {
-  const gray = 0.299 * color.x + 0.587 * color.y + 0.114 * color.z;
+  const gray = 0.299 * color.r + 0.587 * color.g + 0.114 * color.b;
   return new Vec3(gray, gray, gray);
 }
 
@@ -21,7 +21,7 @@ export function grayscale(color: Vec3): Vec3 {
  * @returns Vec3 containing inverted RGB values
  */
 export function invert(color: Vec3): Vec3 {
-  return new Vec3(1 - color.x, 1 - color.y, 1 - color.z);
+  return new Vec3(1 - color.r, 1 - color.g, 1 - color.b);
 }
 
 /**
@@ -32,9 +32,7 @@ export function invert(color: Vec3): Vec3 {
  */
 export function adjustBrightness(color: Vec3, amount: number): Vec3 {
   const hsl = rgbToHSL(color);
-  return hslToRGB(
-    new Vec3(hsl.x, hsl.y, Math.max(0, Math.min(1, hsl.z + amount))),
-  );
+  return hslToRGB(new Vec3(hsl.x, hsl.y, Math.max(0, Math.min(1, hsl.z + amount))));
 }
 
 /**
@@ -45,9 +43,7 @@ export function adjustBrightness(color: Vec3, amount: number): Vec3 {
  */
 export function adjustSaturation(color: Vec3, amount: number): Vec3 {
   const hsl = rgbToHSL(color);
-  return hslToRGB(
-    new Vec3(hsl.x, Math.max(0, Math.min(1, hsl.y + amount)), hsl.z),
-  );
+  return hslToRGB(new Vec3(hsl.x, Math.max(0, Math.min(1, hsl.y + amount)), hsl.z));
 }
 
 /**
@@ -61,13 +57,7 @@ export function adjustContrast(color: Vec3, amount: number): Vec3 {
   const midpoint = 50;
   const factor = 1 + amount;
 
-  return labToRGB(
-    new Vec3(
-      midpoint + (lab.x - midpoint) * factor,
-      lab.y * factor,
-      lab.z * factor,
-    ),
-  );
+  return labToRGB(new Vec3(midpoint + (lab.x - midpoint) * factor, lab.y * factor, lab.z * factor));
 }
 
 /**
@@ -77,7 +67,7 @@ export function adjustContrast(color: Vec3, amount: number): Vec3 {
  * @returns Vec3 containing adjusted gamma values
  */
 export function adjustGamma(color: Vec3, gamma: number): Vec3 {
-  return new Vec3(color.x ** gamma, color.y ** gamma, color.z ** gamma);
+  return new Vec3(color.r ** gamma, color.g ** gamma, color.b ** gamma);
 }
 
 /**
@@ -87,11 +77,7 @@ export function adjustGamma(color: Vec3, gamma: number): Vec3 {
  * @param highlights Adjustment for highlights (-1 to 1)
  * @returns Adjusted color as Vec3 RGB
  */
-export function adjustTonalRange(
-  color: Vec3,
-  shadows: number,
-  highlights: number,
-): Vec3 {
+export function adjustTonalRange(color: Vec3, shadows: number, highlights: number): Vec3 {
   const lab = rgbToLAB(color);
   const l = lab.x;
 
@@ -189,8 +175,8 @@ export function adjustTemperature(color: Vec3, adjustment: number): Vec3 {
  */
 export function rotateHue(color: Vec3, degrees: number): Vec3 {
   const hsl = rgbToHSL(color);
-  const newHue = (hsl.x + degrees / 360 + 1) % 1;
-  return hslToRGB(new Vec3(newHue, hsl.y, hsl.z));
+  const newHue = (hsl.r + degrees / 360 + 1) % 1;
+  return hslToRGB(new Vec3(newHue, hsl.g, hsl.b));
 }
 
 /**
@@ -202,23 +188,17 @@ export function rotateHue(color: Vec3, degrees: number): Vec3 {
 export function adjustVibrance(color: Vec3, amount: number): Vec3 {
   const lab = rgbToLAB(color);
 
-  const saturation = Math.sqrt(lab.y * lab.y + lab.z * lab.z);
+  const saturation = Math.sqrt(lab.g * lab.g + lab.b * lab.b);
 
   const isSkinTone =
-    color.x > color.y &&
-    color.y > color.z &&
-    color.x > 0.4 &&
-    color.x < 0.9 &&
-    color.y > 0.2 &&
-    color.y < 0.7;
+    color.r > color.g && color.g > color.b && color.r > 0.4 && color.r < 0.9 && color.g > 0.2 && color.g < 0.7;
 
   const skinToneFactor = isSkinTone ? 0.3 : 1.0;
   const saturationFactor = Math.max(0, 1 - saturation / 100);
   const adjustmentFactor = 1 + amount * skinToneFactor * saturationFactor;
-  const finalFactor =
-    amount < 0 ? 1 + amount * skinToneFactor : adjustmentFactor;
+  const finalFactor = amount < 0 ? 1 + amount * skinToneFactor : adjustmentFactor;
 
-  return labToRGB(new Vec3(lab.x, lab.y * finalFactor, lab.z * finalFactor));
+  return labToRGB(new Vec3(lab.r, lab.g * finalFactor, lab.b * finalFactor));
 }
 
 /**
@@ -228,15 +208,11 @@ export function adjustVibrance(color: Vec3, amount: number): Vec3 {
  * @returns Sepia-toned color as Vec3 RGB
  */
 export function sepia(color: Vec3, amount: number): Vec3 {
-  const r = color.x * 0.393 + color.y * 0.769 + color.z * 0.189;
-  const g = color.x * 0.349 + color.y * 0.686 + color.z * 0.168;
-  const b = color.x * 0.272 + color.y * 0.534 + color.z * 0.131;
+  const r = color.r * 0.393 + color.g * 0.769 + color.b * 0.189;
+  const g = color.r * 0.349 + color.g * 0.686 + color.b * 0.168;
+  const b = color.r * 0.272 + color.g * 0.534 + color.b * 0.131;
 
-  return mix(
-    color,
-    new Vec3(Math.min(1, r), Math.min(1, g), Math.min(1, b)),
-    amount,
-  );
+  return mix(color, new Vec3(Math.min(1, r), Math.min(1, g), Math.min(1, b)), amount);
 }
 
 /**
@@ -247,9 +223,9 @@ export function sepia(color: Vec3, amount: number): Vec3 {
  */
 export function colorBalance(color: Vec3, adjustments: Vec3): Vec3 {
   return new Vec3(
-    Math.max(0, Math.min(1, color.x * (1 + adjustments.x))),
-    Math.max(0, Math.min(1, color.y * (1 + adjustments.y))),
-    Math.max(0, Math.min(1, color.z * (1 + adjustments.z))),
+    Math.max(0, Math.min(1, color.r * (1 + adjustments.r))),
+    Math.max(0, Math.min(1, color.g * (1 + adjustments.g))),
+    Math.max(0, Math.min(1, color.b * (1 + adjustments.b))),
   );
 }
 
@@ -271,9 +247,7 @@ export function adjustTimeOfDay(color: Vec3, timeOfDay: number): Vec3 {
   };
 
   const hours = Object.keys(temperatures).map(Number);
-  const hour = hours.reduce((prev, curr) =>
-    Math.abs(curr - timeOfDay) < Math.abs(prev - timeOfDay) ? curr : prev,
-  );
+  const hour = hours.reduce((prev, curr) => (Math.abs(curr - timeOfDay) < Math.abs(prev - timeOfDay) ? curr : prev));
 
   const targetTemp = temperatures[hour];
   const currentTemp = estimateColorTemperature(color) || 6500;
@@ -296,9 +270,7 @@ export function harmonizeColor(color: Vec3, referenceColor: Vec3): Vec3 {
   const colorHue = colorHSL.x * 360;
   const refHue = refHSL.x * 360;
 
-  const harmonicIntervals = [
-    0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330,
-  ];
+  const harmonicIntervals = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
 
   let minDiff = 360;
   let harmonicHue = colorHue;
@@ -321,11 +293,5 @@ export function harmonizeColor(color: Vec3, referenceColor: Vec3): Vec3 {
     return color;
   }
 
-  return hslToRGB(
-    new Vec3(
-      harmonicHue / 360,
-      colorHSL.y * 0.8 + refHSL.y * 0.2,
-      colorHSL.z * 0.8 + refHSL.z * 0.2,
-    ),
-  );
+  return hslToRGB(new Vec3(harmonicHue / 360, colorHSL.y * 0.8 + refHSL.y * 0.2, colorHSL.z * 0.8 + refHSL.z * 0.2));
 }

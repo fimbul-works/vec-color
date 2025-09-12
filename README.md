@@ -34,8 +34,14 @@ yarn add @fimbul-works/vec @fimbul-works/vec-color
 import { Vec3 } from '@fimbul-works/vec';
 import { parseColor, adjustBrightness, getTextColor, colorToString } from '@fimbul-works/vec-color';
 
-// Create a color
+// Create and manipulate colors using intuitive accessors
 const brandColor = parseColor('#0066cc');
+brandColor.r *= 1.2;  // Increase red component
+brandColor.g *= 0.8;  // Reduce green component
+
+// Or work with the full RGB array
+const [r, g, b] = brandColor.rgb;
+brandColor.rgb = [r, g * 1.1, b];  // Boost green by 10%
 
 // Make it 20% brighter
 const brightBrand = adjustBrightness(brandColor, 0.2);
@@ -49,21 +55,44 @@ console.log(colorToString(brightBrand, { format: 'hex' })); // #0080ff
 
 ## Usage
 
-This library builds on top of `@fimbul-works/vec`, using [Vec3](https://github.com/fimbul-works/vec/blob/main/VEC3.md) and [Vec4](https://github.com/fimbul-works/vec/blob/main/VEC4.md) classes for all color operations. Each color is represented as a Vec3 (RGB, HSL, LAB, XYZ) or Vec4 (RGBA/CMYK) with values ranging from 0 to 1.
+This library builds on top of [`@fimbul-works/vec`](https://github.com/fimbul-works/vec), using [Vec3](https://github.com/fimbul-works/vec/blob/main/VEC3.md) and [Vec4](https://github.com/fimbul-works/vec/blob/main/VEC4.md) classes for all color operations. Each color is represented as a Vec3 (RGB, HSL, LAB, XYZ) or Vec4 (RGBA/CMYK) with values ranging from 0 to 1.
 
 ## Core Concepts
 
 ### Color Representation
 
-Colors in vec-color are represented using Vec3 (RGB) or Vec4 (RGBA/CMYK) with values ranging from 0 to 1:
+Colors in vec-color are represented using Vec3 (RGB) or Vec4 (RGBA/CMYK) with values ranging from 0 to 1. The library provides convenient color-specific accessors for intuitive color manipulation:
 
 ```typescript
-// RGB color (red)
+// RGB color using standard coordinates
 const red = new Vec3(1, 0, 0);
 
-// RGBA color (semi-transparent blue)
+// RGB color using color accessors - more intuitive for color work
+const blue = new Vec3();
+blue.r = 0;    // Red component
+blue.g = 0;    // Green component
+blue.b = 1;    // Blue component
+
+// Get/set all RGB values at once
+const orange = new Vec3();
+orange.rgb = [1, 0.5, 0];  // Set RGB values as array
+const [r, g, b] = orange.rgb;  // Get RGB values as array
+
+// RGBA color with transparency
 const transBlue = new Vec4(0, 0, 1, 0.5);
+// Or using color accessors
+transBlue.r = 0;
+transBlue.g = 0;
+transBlue.b = 1;
+transBlue.a = 0.5;  // Alpha (transparency)
+
+// Get/set all RGBA values at once
+const semiRed = new Vec4();
+semiRed.rgba = [1, 0, 0, 0.8];  // 80% opaque red
+const [r, g, b, a] = semiRed.rgba;
 ```
+
+The color accessors (`.r`, `.g`, `.b`, `.a`, `.rgb`, `.rgba`) are aliases for the vector components, making color manipulation more intuitive while retaining all the mathematical power of the underlying vector operations.
 
 ### Color Spaces
 

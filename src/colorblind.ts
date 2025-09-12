@@ -38,16 +38,13 @@ const SIMULATION_MATRICES = {
  * @param type Type of color blindness to simulate
  * @returns Simulated color as Vec3 RGB
  */
-export function simulateColorBlindness(
-  color: Vec3,
-  type: ColorBlindnessType,
-): Vec3 {
+export function simulateColorBlindness(color: Vec3, type: ColorBlindnessType): Vec3 {
   const matrix = SIMULATION_MATRICES[type];
 
   return new Vec3(
-    color.x * matrix[0][0] + color.y * matrix[0][1] + color.z * matrix[0][2],
-    color.x * matrix[1][0] + color.y * matrix[1][1] + color.z * matrix[1][2],
-    color.x * matrix[2][0] + color.y * matrix[2][1] + color.z * matrix[2][2],
+    color.r * matrix[0][0] + color.g * matrix[0][1] + color.b * matrix[0][2],
+    color.r * matrix[1][0] + color.g * matrix[1][1] + color.b * matrix[1][2],
+    color.r * matrix[2][0] + color.g * matrix[2][1] + color.b * matrix[2][2],
   );
 }
 
@@ -69,9 +66,7 @@ export function isDistinguishableForColorBlindness(
   const simulated2 = simulateColorBlindness(color2, type);
 
   const difference = Math.sqrt(
-    (simulated1.x - simulated2.x) ** 2 +
-      (simulated1.y - simulated2.y) ** 2 +
-      (simulated1.z - simulated2.z) ** 2,
+    (simulated1.r - simulated2.r) ** 2 + (simulated1.g - simulated2.g) ** 2 + (simulated1.b - simulated2.b) ** 2,
   );
 
   return difference > threshold;
@@ -84,12 +79,7 @@ export function isDistinguishableForColorBlindness(
  */
 export function optimizeForColorBlindness(colors: Vec3[]): Vec3[] {
   const optimized: Vec3[] = [];
-  const types: ColorBlindnessType[] = [
-    "protanopia",
-    "deuteranopia",
-    "tritanopia",
-    "achromatopsia",
-  ];
+  const types: ColorBlindnessType[] = ["protanopia", "deuteranopia", "tritanopia", "achromatopsia"];
 
   if (colors.length > 0) {
     optimized.push(colors[0]);
@@ -106,9 +96,9 @@ export function optimizeForColorBlindness(colors: Vec3[]): Vec3[] {
         for (let lightAdjust = -0.2; lightAdjust <= 0.2; lightAdjust += 0.1) {
           const testColor = hslToRGB(
             new Vec3(
-              ((hsl.x * 360 + hueShift) % 360) / 360,
-              Math.max(0.1, Math.min(1, hsl.y + satAdjust)),
-              Math.max(0.1, Math.min(0.9, hsl.z + lightAdjust)),
+              ((hsl.r * 360 + hueShift) % 360) / 360,
+              Math.max(0.1, Math.min(1, hsl.g + satAdjust)),
+              Math.max(0.1, Math.min(0.9, hsl.b + lightAdjust)),
             ),
           );
 
@@ -119,9 +109,7 @@ export function optimizeForColorBlindness(colors: Vec3[]): Vec3[] {
 
             for (const existing of optimized) {
               const simulatedExisting = simulateColorBlindness(existing, type);
-              const difference =
-                1 -
-                calculateColorSimilarityLab(simulatedTest, simulatedExisting);
+              const difference = 1 - calculateColorSimilarityLab(simulatedTest, simulatedExisting);
               minDifference = Math.min(minDifference, difference);
             }
           }
@@ -152,12 +140,7 @@ export function validateColorBlindnessSafety(colors: Vec3[]): {
     problematicPairs: [Vec3, Vec3][];
   }>;
 } {
-  const types: ColorBlindnessType[] = [
-    "protanopia",
-    "deuteranopia",
-    "tritanopia",
-    "achromatopsia",
-  ];
+  const types: ColorBlindnessType[] = ["protanopia", "deuteranopia", "tritanopia", "achromatopsia"];
   const issues: Array<{
     type: ColorBlindnessType;
     problematicPairs: [Vec3, Vec3][];

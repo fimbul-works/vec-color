@@ -8,14 +8,7 @@ import { Vec3 } from "@fimbul-works/vec";
  * @returns Boolean indicating if color is in gamut
  */
 export function isInGamut(color: Vec3): boolean {
-  return (
-    color.x >= 0 &&
-    color.x <= 1 &&
-    color.y >= 0 &&
-    color.y <= 1 &&
-    color.z >= 0 &&
-    color.z <= 1
-  );
+  return color.r >= 0 && color.r <= 1 && color.g >= 0 && color.g <= 1 && color.b >= 0 && color.b <= 1;
 }
 
 /**
@@ -26,9 +19,9 @@ export function isInGamut(color: Vec3): boolean {
  */
 export function clipToGamut(color: Vec3): Vec3 {
   return new Vec3(
-    Math.min(1, Math.max(0, color.x)),
-    Math.min(1, Math.max(0, color.y)),
-    Math.min(1, Math.max(0, color.z)),
+    Math.min(1, Math.max(0, color.r)),
+    Math.min(1, Math.max(0, color.g)),
+    Math.min(1, Math.max(0, color.b)),
   );
 }
 
@@ -78,10 +71,7 @@ export function compressToGamut(color: Vec3, preserveHue = true): Vec3 {
     const vector = lab.subtract(center);
     let scale = 1;
 
-    while (
-      !isInGamut((compressed = labToRGB(center.add(vector.scale(scale))))) &&
-      scale > 0
-    ) {
+    while (!isInGamut((compressed = labToRGB(center.add(vector.scale(scale))))) && scale > 0) {
       scale *= 0.9;
     }
   }
@@ -99,14 +89,14 @@ export function projectToGamut(color: Vec3): Vec3 {
   if (isInGamut(color)) return color;
 
   const lab = rgbToLAB(color);
-  const L = lab.x;
+  const L = lab.r;
   let result = clipToGamut(color);
   let resultLab = rgbToLAB(result);
 
   // Adjust result to maintain original lightness
-  const lightnessDiff = L - resultLab.x;
+  const lightnessDiff = L - resultLab.r;
   if (Math.abs(lightnessDiff) > 0.01) {
-    resultLab = new Vec3(L, resultLab.y, resultLab.z);
+    resultLab = new Vec3(L, resultLab.g, resultLab.b);
     result = clipToGamut(labToRGB(resultLab));
   }
 

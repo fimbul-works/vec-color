@@ -19,27 +19,23 @@ function isVec4(color: BlendColor): color is Vec4 {
  * @param ratio Mix ratio (0 to 1)
  * @returns Mixed color in same format as inputs
  */
-export function mix<T extends BlendColor>(
-  color1: T,
-  color2: T,
-  ratio: number,
-): T {
+export function mix<T extends BlendColor>(color1: T, color2: T, ratio: number): T {
   if (isVec4(color1) && isVec4(color2)) {
-    const outAlpha = color1.w * (1 - ratio) + color2.w * ratio;
+    const outAlpha = color1.a * (1 - ratio) + color2.a * ratio;
     if (outAlpha === 0) return new Vec4(0, 0, 0, 0) as T;
 
     return new Vec4(
-      color1.x * (1 - ratio) + color2.x * ratio,
-      color1.y * (1 - ratio) + color2.y * ratio,
-      color1.z * (1 - ratio) + color2.z * ratio,
+      color1.r * (1 - ratio) + color2.r * ratio,
+      color1.g * (1 - ratio) + color2.g * ratio,
+      color1.b * (1 - ratio) + color2.b * ratio,
       outAlpha,
     ) as T;
   }
 
   return new Vec3(
-    color1.x * (1 - ratio) + color2.x * ratio,
-    color1.y * (1 - ratio) + color2.y * ratio,
-    color1.z * (1 - ratio) + color2.z * ratio,
+    color1.r * (1 - ratio) + color2.r * ratio,
+    color1.g * (1 - ratio) + color2.g * ratio,
+    color1.b * (1 - ratio) + color2.b * ratio,
   ) as T;
 }
 
@@ -50,13 +46,13 @@ export function mix<T extends BlendColor>(
  * @returns Vec4 containing the blended RGBA color
  */
 export function blendWithAlpha(bottom: Vec4, top: Vec4): Vec4 {
-  const outAlpha = top.w + bottom.w * (1 - top.w);
+  const outAlpha = top.a + bottom.a * (1 - top.a);
   if (outAlpha === 0) return new Vec4(0, 0, 0, 0);
 
   return new Vec4(
-    top.x + bottom.x * (1 - top.w),
-    top.y + bottom.y * (1 - top.w),
-    top.z + bottom.z * (1 - top.w),
+    top.r + bottom.r * (1 - top.a),
+    top.g + bottom.g * (1 - top.a),
+    top.b + bottom.b * (1 - top.a),
     outAlpha,
   );
 }
@@ -69,30 +65,20 @@ export function blendWithAlpha(bottom: Vec4, top: Vec4): Vec4 {
  * @param blendFn Blend function to apply to RGB components
  * @returns Blended color in same format as inputs
  */
-function applyBlend<T extends BlendColor>(
-  base: T,
-  blend: T,
-  blendFn: (base: Vec3, blend: Vec3) => Vec3,
-): T {
+function applyBlend<T extends BlendColor>(base: T, blend: T, blendFn: (base: Vec3, blend: Vec3) => Vec3): T {
   if (isVec4(base) && isVec4(blend)) {
-    const premulBase = toPremultipliedAlpha(
-      new Vec3(base.x, base.y, base.z),
-      base.w,
-    );
+    const premulBase = toPremultipliedAlpha(new Vec3(base.r, base.g, base.b), base.a);
 
-    const premulBlend = toPremultipliedAlpha(
-      new Vec3(blend.x, blend.y, blend.z),
-      blend.w,
-    );
+    const premulBlend = toPremultipliedAlpha(new Vec3(blend.r, blend.g, blend.b), blend.a);
 
-    const baseVec3 = new Vec3(premulBase.x, premulBase.y, premulBase.z);
-    const blendVec3 = new Vec3(premulBlend.x, premulBlend.y, premulBlend.z);
+    const baseVec3 = new Vec3(premulBase.r, premulBase.g, premulBase.b);
+    const blendVec3 = new Vec3(premulBlend.r, premulBlend.g, premulBlend.b);
     const result = blendFn(baseVec3, blendVec3);
 
-    const outAlpha = blend.w + base.w * (1 - blend.w);
+    const outAlpha = blend.a + base.a * (1 - blend.a);
     if (outAlpha === 0) return new Vec4(0, 0, 0, 0) as T;
 
-    return new Vec4(result.x, result.y, result.z, outAlpha) as T;
+    return new Vec4(result.r, result.g, result.b, outAlpha) as T;
   }
 
   return blendFn(base as Vec3, blend as Vec3) as T;
@@ -106,11 +92,7 @@ function applyBlend<T extends BlendColor>(
  * @returns Blended color in same format as inputs
  */
 export function blendMultiply<T extends BlendColor>(base: T, blend: T): T {
-  return applyBlend(
-    base,
-    blend,
-    (b, bl) => new Vec3(b.x * bl.x, b.y * bl.y, b.z * bl.z),
-  );
+  return applyBlend(base, blend, (b, bl) => new Vec3(b.r * bl.r, b.g * bl.g, b.b * bl.b));
 }
 
 /**
@@ -124,12 +106,7 @@ export function blendScreen<T extends BlendColor>(base: T, blend: T): T {
   return applyBlend(
     base,
     blend,
-    (b, bl) =>
-      new Vec3(
-        1 - (1 - b.x) * (1 - bl.x),
-        1 - (1 - b.y) * (1 - bl.y),
-        1 - (1 - b.z) * (1 - bl.z),
-      ),
+    (b, bl) => new Vec3(1 - (1 - b.r) * (1 - bl.r), 1 - (1 - b.g) * (1 - bl.g), 1 - (1 - b.b) * (1 - bl.b)),
   );
 }
 
@@ -146,9 +123,9 @@ export function blendOverlay<T extends BlendColor>(base: T, blend: T): T {
     blend,
     (b, bl) =>
       new Vec3(
-        b.x < 0.5 ? 2 * b.x * bl.x : 1 - 2 * (1 - b.x) * (1 - bl.x),
-        b.y < 0.5 ? 2 * b.y * bl.y : 1 - 2 * (1 - b.y) * (1 - bl.y),
-        b.z < 0.5 ? 2 * b.z * bl.z : 1 - 2 * (1 - b.z) * (1 - bl.z),
+        b.r < 0.5 ? 2 * b.r * bl.r : 1 - 2 * (1 - b.r) * (1 - bl.r),
+        b.g < 0.5 ? 2 * b.g * bl.g : 1 - 2 * (1 - b.g) * (1 - bl.g),
+        b.b < 0.5 ? 2 * b.b * bl.b : 1 - 2 * (1 - b.b) * (1 - bl.b),
       ),
   );
 }
@@ -161,12 +138,7 @@ export function blendOverlay<T extends BlendColor>(base: T, blend: T): T {
  * @returns Blended color in same format as inputs
  */
 export function blendDarken<T extends BlendColor>(base: T, blend: T): T {
-  return applyBlend(
-    base,
-    blend,
-    (b, bl) =>
-      new Vec3(Math.min(b.x, bl.x), Math.min(b.y, bl.y), Math.min(b.z, bl.z)),
-  );
+  return applyBlend(base, blend, (b, bl) => new Vec3(Math.min(b.r, bl.r), Math.min(b.g, bl.g), Math.min(b.b, bl.b)));
 }
 
 /**
@@ -177,12 +149,7 @@ export function blendDarken<T extends BlendColor>(base: T, blend: T): T {
  * @returns Blended color in same format as inputs
  */
 export function blendLighten<T extends BlendColor>(base: T, blend: T): T {
-  return applyBlend(
-    base,
-    blend,
-    (b, bl) =>
-      new Vec3(Math.max(b.x, bl.x), Math.max(b.y, bl.y), Math.max(b.z, bl.z)),
-  );
+  return applyBlend(base, blend, (b, bl) => new Vec3(Math.max(b.r, bl.r), Math.max(b.g, bl.g), Math.max(b.b, bl.b)));
 }
 
 /**
@@ -198,9 +165,9 @@ export function blendColorDodge<T extends BlendColor>(base: T, blend: T): T {
     blend,
     (b, bl) =>
       new Vec3(
-        b.x === 0 ? 0 : bl.x === 1 ? 1 : Math.min(1, b.x / (1 - bl.x)),
-        b.y === 0 ? 0 : bl.y === 1 ? 1 : Math.min(1, b.y / (1 - bl.y)),
-        b.z === 0 ? 0 : bl.z === 1 ? 1 : Math.min(1, b.z / (1 - bl.z)),
+        b.r === 0 ? 0 : bl.r === 1 ? 1 : Math.min(1, b.r / (1 - bl.r)),
+        b.g === 0 ? 0 : bl.g === 1 ? 1 : Math.min(1, b.g / (1 - bl.g)),
+        b.b === 0 ? 0 : bl.b === 1 ? 1 : Math.min(1, b.b / (1 - bl.b)),
       ),
   );
 }
@@ -218,9 +185,9 @@ export function blendColorBurn<T extends BlendColor>(base: T, blend: T): T {
     blend,
     (b, bl) =>
       new Vec3(
-        b.x === 1 ? 1 : bl.x === 0 ? 0 : 1 - Math.min(1, (1 - b.x) / bl.x),
-        b.y === 1 ? 1 : bl.y === 0 ? 0 : 1 - Math.min(1, (1 - b.y) / bl.y),
-        b.z === 1 ? 1 : bl.z === 0 ? 0 : 1 - Math.min(1, (1 - b.z) / bl.z),
+        b.r === 1 ? 1 : bl.r === 0 ? 0 : 1 - Math.min(1, (1 - b.r) / bl.r),
+        b.g === 1 ? 1 : bl.g === 0 ? 0 : 1 - Math.min(1, (1 - b.g) / bl.g),
+        b.b === 1 ? 1 : bl.b === 0 ? 0 : 1 - Math.min(1, (1 - b.b) / bl.b),
       ),
   );
 }
@@ -238,15 +205,9 @@ export function blendHardLight<T extends BlendColor>(base: T, blend: T): T {
     blend,
     (b, bl) =>
       new Vec3(
-        blend.x < 0.5
-          ? 2 * base.x * blend.x
-          : 1 - 2 * (1 - base.x) * (1 - blend.x),
-        blend.y < 0.5
-          ? 2 * base.y * blend.y
-          : 1 - 2 * (1 - base.y) * (1 - blend.y),
-        blend.z < 0.5
-          ? 2 * base.z * blend.z
-          : 1 - 2 * (1 - base.z) * (1 - blend.z),
+        blend.r < 0.5 ? 2 * base.r * blend.r : 1 - 2 * (1 - base.r) * (1 - blend.r),
+        blend.g < 0.5 ? 2 * base.g * blend.g : 1 - 2 * (1 - base.g) * (1 - blend.g),
+        blend.b < 0.5 ? 2 * base.b * blend.b : 1 - 2 * (1 - base.b) * (1 - blend.b),
       ),
   );
 }
@@ -267,16 +228,7 @@ export function blendSoftLight<T extends BlendColor>(base: T, blend: T): T {
     return b + (2 * l - 1) * (d - b);
   };
 
-  return applyBlend(
-    base,
-    blend,
-    (b, bl) =>
-      new Vec3(
-        softlight(b.x, bl.x),
-        softlight(b.y, bl.y),
-        softlight(b.z, bl.z),
-      ),
-  );
+  return applyBlend(base, blend, (b, bl) => new Vec3(softlight(b.r, bl.r), softlight(b.g, bl.g), softlight(b.b, bl.b)));
 }
 
 /**
@@ -287,16 +239,7 @@ export function blendSoftLight<T extends BlendColor>(base: T, blend: T): T {
  * @returns Blended color in same format as inputs
  */
 export function blendDifference<T extends BlendColor>(base: T, blend: T): T {
-  return applyBlend(
-    base,
-    blend,
-    (b, bl) =>
-      new Vec3(
-        Math.abs(b.x - bl.x),
-        Math.abs(b.y - bl.y),
-        Math.abs(b.z - bl.z),
-      ),
-  );
+  return applyBlend(base, blend, (b, bl) => new Vec3(Math.abs(b.r - bl.r), Math.abs(b.g - bl.g), Math.abs(b.b - bl.b)));
 }
 
 /**
@@ -310,11 +253,6 @@ export function blendExclusion<T extends BlendColor>(base: T, blend: T): T {
   return applyBlend(
     base,
     blend,
-    (b, bl) =>
-      new Vec3(
-        b.x + bl.x - 2 * b.x * bl.x,
-        b.y + bl.y - 2 * b.y * bl.y,
-        b.z + bl.z - 2 * b.z * bl.z,
-      ),
+    (b, bl) => new Vec3(b.r + bl.r - 2 * b.r * bl.r, b.g + bl.g - 2 * b.g * bl.g, b.b + bl.b - 2 * b.b * bl.b),
   );
 }

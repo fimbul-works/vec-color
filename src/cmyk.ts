@@ -6,12 +6,12 @@ import { Vec3, Vec4 } from "@fimbul-works/vec";
  * @returns Vec4 containing CMYK values (each channel from 0 to 1)
  */
 export function rgbToCMYK(rgb: Vec3): Vec4 {
-  const k = 1 - Math.max(rgb.x, rgb.y, rgb.z);
+  const k = 1 - Math.max(rgb.r, rgb.g, rgb.b);
   if (k === 1) return new Vec4(0, 0, 0, 1);
 
-  const c = (1 - rgb.x - k) / (1 - k);
-  const m = (1 - rgb.y - k) / (1 - k);
-  const y = (1 - rgb.z - k) / (1 - k);
+  const c = (1 - rgb.r - k) / (1 - k);
+  const m = (1 - rgb.g - k) / (1 - k);
+  const y = (1 - rgb.b - k) / (1 - k);
 
   return new Vec4(c, m, y, k);
 }

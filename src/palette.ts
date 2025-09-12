@@ -1,8 +1,4 @@
-import {
-  contrastRatio,
-  meetsWCAGRequirements,
-  relativeLuminance,
-} from "./analyze";
+import { contrastRatio, meetsWCAGRequirements, relativeLuminance } from "./analyze";
 import { hslToRGB, rgbToHSL } from "./hsl";
 
 import { Vec3 } from "@fimbul-works/vec";
@@ -15,7 +11,7 @@ import { harmonizeColor } from "./transform";
  */
 export function complement(color: Vec3): Vec3 {
   const hsl = rgbToHSL(color);
-  return hslToRGB(new Vec3((hsl.x + 180) % 360, hsl.y, hsl.z));
+  return hslToRGB(new Vec3((hsl.r + 180) % 360, hsl.y, hsl.z));
 }
 
 /**
@@ -27,8 +23,8 @@ export function splitComplementary(color: Vec3): Vec3[] {
   const hsl = rgbToHSL(color);
   return [
     color,
-    hslToRGB(new Vec3((hsl.x + 150 / 360) % 1, hsl.y, hsl.z)),
-    hslToRGB(new Vec3((hsl.x + 210 / 360) % 1, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 150 / 360) % 1, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 210 / 360) % 1, hsl.y, hsl.z)),
   ];
 }
 
@@ -41,8 +37,8 @@ export function analogous(color: Vec3): Vec3[] {
   const hsl = rgbToHSL(color);
   return [
     color,
-    hslToRGB(new Vec3((hsl.x + 30) % 360, hsl.y, hsl.z)),
-    hslToRGB(new Vec3((hsl.x - 30 + 360) % 360, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 30) % 360, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r - 30 + 360) % 360, hsl.y, hsl.z)),
   ];
 }
 
@@ -55,8 +51,8 @@ export function triadic(color: Vec3): Vec3[] {
   const hsl = rgbToHSL(color);
   return [
     color,
-    hslToRGB(new Vec3((hsl.x + 120) % 360, hsl.y, hsl.z)),
-    hslToRGB(new Vec3((hsl.x + 240) % 360, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 120) % 360, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 240) % 360, hsl.y, hsl.z)),
   ];
 }
 
@@ -69,9 +65,9 @@ export function tetradic(color: Vec3): Vec3[] {
   const hsl = rgbToHSL(color);
   return [
     color,
-    hslToRGB(new Vec3((hsl.x + 90 / 360) % 1, hsl.y, hsl.z)),
-    hslToRGB(new Vec3((hsl.x + 180 / 360) % 1, hsl.y, hsl.z)),
-    hslToRGB(new Vec3((hsl.x + 270 / 360) % 1, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 90 / 360) % 1, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 180 / 360) % 1, hsl.y, hsl.z)),
+    hslToRGB(new Vec3((hsl.r + 270 / 360) % 1, hsl.y, hsl.z)),
   ];
 }
 
@@ -99,12 +95,12 @@ export function monochromatic(color: Vec3): Vec3[] {
  */
 export function compound(color: Vec3): Vec3[] {
   const hsl = rgbToHSL(color);
-  const complementHue = (hsl.x + 0.5) % 1;
+  const complementHue = (hsl.r + 0.5) % 1;
   return [
     color,
     hslToRGB(new Vec3(complementHue, hsl.y, hsl.z)),
-    hslToRGB(new Vec3((complementHue + 30 / 360) % 1, hsl.y * 0.9, hsl.z)),
-    hslToRGB(new Vec3((complementHue - 30 / 360 + 1) % 1, hsl.y * 0.9, hsl.z)),
+    hslToRGB(new Vec3((complementHue + 30 / 360) % 1, hsl.g * 0.9, hsl.z)),
+    hslToRGB(new Vec3((complementHue - 30 / 360 + 1) % 1, hsl.g * 0.9, hsl.z)),
   ];
 }
 
@@ -179,11 +175,7 @@ export function getTextColor(backgroundColor: Vec3): Vec3 {
  * @param minContrast - Minimum contrast ratio required (default: 4.5)
  * @returns Array of Vec3 colors that meet contrast requirements
  */
-export function generateAccessiblePalette(
-  baseColor: Vec3,
-  count = 5,
-  minContrast = 4.5,
-): Vec3[] {
+export function generateAccessiblePalette(baseColor: Vec3, count = 5, minContrast = 4.5): Vec3[] {
   const palette: Vec3[] = [baseColor];
   const hsl = rgbToHSL(baseColor);
 
@@ -208,10 +200,7 @@ export function generateAccessiblePalette(
  * @param wcagLevel WCAG compliance level to maintain
  * @returns Harmonized colors
  */
-export function harmonizePalette(
-  colors: Vec3[],
-  wcagLevel: "AA" | "AAA" = "AA",
-): Vec3[] {
+export function harmonizePalette(colors: Vec3[], wcagLevel: "AA" | "AAA" = "AA"): Vec3[] {
   if (colors.length < 2) return colors;
 
   // Start with the first color as reference
@@ -220,9 +209,7 @@ export function harmonizePalette(
 
   // Helper to check if a color maintains contrast with existing colors
   const maintainsContrast = (color: Vec3): boolean => {
-    return harmonized.every((existing) =>
-      meetsWCAGRequirements(color, existing, wcagLevel),
-    );
+    return harmonized.every((existing) => meetsWCAGRequirements(color, existing, wcagLevel));
   };
 
   // Process each remaining color
@@ -236,13 +223,7 @@ export function harmonizePalette(
       const attempts = [-0.1, 0.1, -0.2, 0.2, -0.3, 0.3];
 
       for (const adjustment of attempts) {
-        const adjusted = hslToRGB(
-          new Vec3(
-            hsl.x,
-            hsl.y,
-            Math.max(0.1, Math.min(0.9, hsl.z + adjustment)),
-          ),
-        );
+        const adjusted = hslToRGB(new Vec3(hsl.x, hsl.y, Math.max(0.1, Math.min(0.9, hsl.z + adjustment))));
 
         if (maintainsContrast(adjusted)) {
           harmonizedColor = adjusted;

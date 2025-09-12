@@ -1,7 +1,7 @@
 {
   "name": "@fimbul-works/vec-color",
   "description": "A comprehensive, type-safe color manipulation library for TypeScript that provides a wide range of color space conversions, blending operations, and accessibility utilities.",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "type": "module",
   "private": false,
   "license": "MIT",
@@ -36,33 +36,110 @@
     "color-contrast",
     "color-transform"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
   "files": ["dist", "README.md", "API.md", "LICENSE"],
   "sideEffects": false,
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc --build --clean && tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
+    "build": "rm -rf dist && pnpm build:esm && pnpm build:cjs",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "format": "npx biome format --write src",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@fimbul-works/vec": "^1.0.0"
+    "@fimbul-works/vec": "^1.1.0"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.js"
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./alpha": {
+      "types": "./dist/esm/alpha.d.ts",
+      "import": "./dist/esm/alpha.js",
+      "require": "./dist/cjs/alpha.js"
+    },
+    "./analyze": {
+      "types": "./dist/esm/analyze.d.ts",
+      "import": "./dist/esm/analyze.js",
+      "require": "./dist/cjs/analyze.js"
+    },
+    "./blend": {
+      "types": "./dist/esm/blend.d.ts",
+      "import": "./dist/esm/blend.js",
+      "require": "./dist/cjs/blend.js"
+    },
+    "./cmyk": {
+      "types": "./dist/esm/cmyk.d.ts",
+      "import": "./dist/esm/cmyk.js",
+      "require": "./dist/cjs/cmyk.js"
+    },
+    "./colorblind": {
+      "types": "./dist/esm/colorblind.d.ts",
+      "import": "./dist/esm/colorblind.js",
+      "require": "./dist/cjs/colorblind.js"
+    },
+    "./cosine": {
+      "types": "./dist/esm/cosine.d.ts",
+      "import": "./dist/esm/cosine.js",
+      "require": "./dist/cjs/cosine.js"
+    },
+    "./debug": {
+      "types": "./dist/esm/debug.d.ts",
+      "import": "./dist/esm/debug.js",
+      "require": "./dist/cjs/debug.js"
+    },
+    "./format": {
+      "types": "./dist/esm/format.d.ts",
+      "import": "./dist/esm/format.js",
+      "require": "./dist/cjs/format.js"
+    },
+    "./gamut": {
+      "types": "./dist/esm/gamut.d.ts",
+      "import": "./dist/esm/gamut.js",
+      "require": "./dist/cjs/gamut.js"
+    },
+    "./hsl": {
+      "types": "./dist/esm/hsl.d.ts",
+      "import": "./dist/esm/hsl.js",
+      "require": "./dist/cjs/hsl.js"
+    },
+    "./kelvin": {
+      "types": "./dist/esm/kelvin.d.ts",
+      "import": "./dist/esm/kelvin.js",
+      "require": "./dist/cjs/kelvin.js"
+    },
+    "./lab": {
+      "types": "./dist/esm/lab.d.ts",
+      "import": "./dist/esm/lab.js",
+      "require": "./dist/cjs/lab.js"
+    },
+    "./palette": {
+      "types": "./dist/esm/palette.d.ts",
+      "import": "./dist/esm/palette.js",
+      "require": "./dist/cjs/palette.js"
+    },
+    "./preset": {
+      "types": "./dist/esm/preset.d.ts",
+      "import": "./dist/esm/preset.js",
+      "require": "./dist/cjs/preset.js"
+    },
+    "./transform": {
+      "types": "./dist/esm/transform.d.ts",
+      "import": "./dist/esm/transform.js",
+      "require": "./dist/cjs/transform.js"
+    },
+    "./xyz": {
+      "types": "./dist/esm/xyz.d.ts",
+      "import": "./dist/esm/xyz.js",
+      "require": "./dist/cjs/xyz.js"
     }
   },
-  "engines": {
-    "node": ">=16.0.0"
-  },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "typescript": "^5.7.3"
+    "@biomejs/biome": "^2.2.4",
+    "typescript": "^5.9.2"
   }
 }

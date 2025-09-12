@@ -10,17 +10,11 @@ import { Vec3 } from "@fimbul-works/vec";
  * @returns Vec3 containing the generated color
  * @see https://iquilezles.org/articles/palettes/
  */
-export function cosineGradient(
-  t: number,
-  a: Vec3,
-  b: Vec3,
-  c: Vec3,
-  d: Vec3,
-): Vec3 {
+export function cosineGradient(t: number, a: Vec3, b: Vec3, c: Vec3, d: Vec3): Vec3 {
   return new Vec3(
-    a.x + b.x * Math.cos(6.28318 * (c.x * t + d.x)),
-    a.y + b.y * Math.cos(6.28318 * (c.y * t + d.y)),
-    a.z + b.z * Math.cos(6.28318 * (c.z * t + d.z)),
+    a.r + b.r * Math.cos(6.28318 * (c.r * t + d.r)),
+    a.g + b.g * Math.cos(6.28318 * (c.g * t + d.g)),
+    a.b + b.b * Math.cos(6.28318 * (c.b * t + d.b)),
   );
 }
 
@@ -32,10 +26,7 @@ export type CosineGradientPreset = { a: Vec3; b: Vec3; c: Vec3; d: Vec3 };
  * @param preset - Preset parameters for the cosine gradient
  * @returns Array of Vec3 colors
  */
-export function generateCosinePalette(
-  steps: number,
-  preset: CosineGradientPreset,
-): Vec3[] {
+export function generateCosinePalette(steps: number, preset: CosineGradientPreset): Vec3[] {
   const palette: Vec3[] = [];
   for (let i = 0; i < steps; i++) {
     const t = i / (steps - 1);

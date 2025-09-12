@@ -19,12 +19,12 @@ export type ColorClassification = {
  * @returns A value between 0 and 1, where 1 means identical colors and 0 means maximum perceptual difference
  */
 export function calculateColorSimilarityFast(A: Vec3, B: Vec3): number {
-  const ar = Math.round(A.x * 255);
-  const ag = Math.round(A.y * 255);
-  const ab = Math.round(A.z * 255);
-  const br = Math.round(B.x * 255);
-  const bg = Math.round(B.y * 255);
-  const bb = Math.round(B.z * 255);
+  const ar = Math.round(A.r * 255);
+  const ag = Math.round(A.g * 255);
+  const ab = Math.round(A.b * 255);
+  const br = Math.round(B.r * 255);
+  const bg = Math.round(B.g * 255);
+  const bb = Math.round(B.b * 255);
 
   const rmean = (ar + br) / 2;
   const r = ar - br;
@@ -33,12 +33,7 @@ export function calculateColorSimilarityFast(A: Vec3, B: Vec3): number {
 
   return (
     1.0 -
-    Math.sqrt(
-      (Math.floor((512 + rmean) * r * r) >> 8) +
-        4 * g * g +
-        (Math.floor((767 - rmean) * b * b) >> 8),
-    ) /
-      765.0
+    Math.sqrt((Math.floor((512 + rmean) * r * r) >> 8) + 4 * g * g + (Math.floor((767 - rmean) * b * b) >> 8)) / 765.0
   );
 }
 
@@ -70,12 +65,9 @@ export function calculateColorSimilarityLab(rgb1: Vec3, rgb2: Vec3) {
  * @see https://www.w3.org/WAI/GL/wiki/Relative_luminance
  */
 export function relativeLuminance(color: Vec3): number {
-  const rsRGB =
-    color.x <= 0.03928 ? color.x / 12.92 : ((color.x + 0.055) / 1.055) ** 2.4;
-  const gsRGB =
-    color.y <= 0.03928 ? color.y / 12.92 : ((color.y + 0.055) / 1.055) ** 2.4;
-  const bsRGB =
-    color.z <= 0.03928 ? color.z / 12.92 : ((color.z + 0.055) / 1.055) ** 2.4;
+  const rsRGB = color.r <= 0.03928 ? color.r / 12.92 : ((color.r + 0.055) / 1.055) ** 2.4;
+  const gsRGB = color.g <= 0.03928 ? color.g / 12.92 : ((color.g + 0.055) / 1.055) ** 2.4;
+  const bsRGB = color.b <= 0.03928 ? color.b / 12.92 : ((color.b + 0.055) / 1.055) ** 2.4;
 
   return 0.2126 * rsRGB + 0.7152 * gsRGB + 0.0722 * bsRGB;
 }
@@ -103,11 +95,7 @@ export function contrastRatio(color1: Vec3, color2: Vec3): number {
  * @returns Perceived brightness value (0 to 1)
  */
 export function perceivedBrightness(color: Vec3): number {
-  return Math.sqrt(
-    0.299 * color.x * color.x +
-      0.587 * color.y * color.y +
-      0.114 * color.z * color.z,
-  );
+  return Math.sqrt(0.299 * color.r * color.r + 0.587 * color.g * color.g + 0.114 * color.b * color.b);
 }
 
 /**
@@ -261,18 +249,12 @@ export function findDominantColors(colors: Vec3[], count = 5): Vec3[] {
     centroids = clusters.map((cluster) => {
       if (cluster.length === 0) return previousCentroids[0];
 
-      const sum = cluster.reduce(
-        (acc, color) => acc.add(color),
-        new Vec3(0, 0, 0),
-      );
+      const sum = cluster.reduce((acc, color) => acc.add(color), new Vec3(0, 0, 0));
       return sum.scale(1 / cluster.length);
     });
 
     // Check for convergence
-    const hasConverged = centroids.every(
-      (centroid, i) =>
-        centroid.subtract(previousCentroids[i]).magnitude < 0.001,
-    );
+    const hasConverged = centroids.every((centroid, i) => centroid.subtract(previousCentroids[i]).magnitude < 0.001);
 
     if (hasConverged) break;
     iterations++;
@@ -288,23 +270,18 @@ export function findDominantColors(colors: Vec3[], count = 5): Vec3[] {
  */
 export function classifyColor(color: Vec3): ColorClassification {
   const hsl = rgbToHSL(color);
-  const lab = rgbToLAB(color);
 
   // Determine temperature
-  const hue = hsl.x * 360;
+  const hue = hsl.r * 360;
   const temperature =
-    (hue >= 30 && hue <= 110) || (hue >= 270 && hue <= 290)
-      ? "cool"
-      : hue > 110 && hue < 270
-        ? "neutral"
-        : "warm";
+    (hue >= 30 && hue <= 110) || (hue >= 270 && hue <= 290) ? "cool" : hue > 110 && hue < 270 ? "neutral" : "warm";
 
   // Determine intensity
   let intensity: "vivid" | "pastel" | "dark" | "light" | "medium";
-  if (hsl.z < 0.2) intensity = "dark";
-  else if (hsl.z > 0.8) intensity = "light";
-  else if (hsl.y > 0.8) intensity = "vivid";
-  else if (hsl.y < 0.3 && hsl.z > 0.7) intensity = "pastel";
+  if (hsl.b < 0.2) intensity = "dark";
+  else if (hsl.b > 0.8) intensity = "light";
+  else if (hsl.g > 0.8) intensity = "vivid";
+  else if (hsl.g < 0.3 && hsl.b > 0.7) intensity = "pastel";
   else intensity = "medium";
 
   // Determine basic color category
@@ -320,7 +297,7 @@ export function classifyColor(color: Vec3): ColorClassification {
   ];
 
   let category = "grayscale";
-  if (hsl.y > 0.15) {
+  if (hsl.g > 0.15) {
     category =
       hueCategories.find((cat) => {
         if (cat.start > cat.end) {
@@ -339,25 +316,22 @@ export function classifyColor(color: Vec3): ColorClassification {
  * @param by Attribute to sort by ('hue', 'saturation', 'lightness', 'temperature')
  * @returns Sorted array of colors
  */
-export function sortColors(
-  colors: Vec3[],
-  by: "hue" | "saturation" | "lightness" | "temperature" = "hue",
-): Vec3[] {
+export function sortColors(colors: Vec3[], by: "hue" | "saturation" | "lightness" | "temperature" = "hue"): Vec3[] {
   return [...colors].sort((a, b) => {
     const hslA = rgbToHSL(a);
     const hslB = rgbToHSL(b);
 
     switch (by) {
       case "hue":
-        return hslA.x - hslB.x;
+        return hslA.r - hslB.r;
       case "saturation":
-        return hslB.y - hslA.y;
+        return hslB.g - hslA.g;
       case "lightness":
-        return hslB.z - hslA.z;
+        return hslB.b - hslA.b;
       case "temperature": {
         // Calculate temperature based on red/blue ratio
-        const tempA = a.x / Math.max(0.1, a.z);
-        const tempB = b.x / Math.max(0.1, b.z);
+        const tempA = a.r / Math.max(0.1, a.b);
+        const tempB = b.r / Math.max(0.1, b.b);
         return tempB - tempA;
       }
     }
@@ -370,7 +344,5 @@ export function sortColors(
  * @returns 2D array of perceptual color differences
  */
 export function colorDistanceMatrix(colors: Vec3[]): number[][] {
-  return colors.map((colorA) =>
-    colors.map((colorB) => calculateColorSimilarityLab(colorA, colorB)),
-  );
+  return colors.map((colorA) => colors.map((colorB) => calculateColorSimilarityLab(colorA, colorB)));
 }

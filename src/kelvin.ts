@@ -38,11 +38,7 @@ export function kelvinToRGB(kelvin: number): Vec3 {
   }
 
   // Clamp and normalize values
-  return new Vec3(
-    Math.max(0, Math.min(1, r)),
-    Math.max(0, Math.min(1, g)),
-    Math.max(0, Math.min(1, b)),
-  );
+  return new Vec3(Math.max(0, Math.min(1, r)), Math.max(0, Math.min(1, g)), Math.max(0, Math.min(1, b)));
 }
 
 /**
@@ -51,10 +47,7 @@ export function kelvinToRGB(kelvin: number): Vec3 {
  * @param rgb Vec3 containing RGB values
  * @returns Approximate color temperature in Kelvin or null if no good match
  */
-export function estimateColorTemperature(
-  rgb: Vec3,
-  iterations = 20,
-): number | null {
+export function estimateColorTemperature(rgb: Vec3, iterations = 20): number | null {
   let min = 1000;
   let max = 40000;
   let closest: number | null = null;
@@ -63,17 +56,14 @@ export function estimateColorTemperature(
   for (let i = 0; i < iterations; i++) {
     const mid = (min + max) / 2;
     const test = kelvinToRGB(mid);
-    const diff =
-      Math.abs(test.x - rgb.x) +
-      Math.abs(test.y - rgb.y) +
-      Math.abs(test.z - rgb.z);
+    const diff = Math.abs(test.r - rgb.r) + Math.abs(test.g - rgb.g) + Math.abs(test.b - rgb.b);
 
     if (diff < minDiff) {
       minDiff = diff;
       closest = mid;
     }
 
-    if (test.x / test.z > rgb.x / rgb.z) {
+    if (test.r / test.b > rgb.r / rgb.b) {
       max = mid;
     } else {
       min = mid;

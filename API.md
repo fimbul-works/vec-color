@@ -70,8 +70,10 @@
 
 Colors are represented using vector types from the [@fimbul-works/vec](https://github.com/fimbul-works/vec) library: [Vec3](https://github.com/fimbul-works/vec/blob/main/VEC3.md) for RGB colors and [Vec4](https://github.com/fimbul-works/vec/blob/main/VEC4.md) for RGBA/CMYK, with all values normalized between 0 and 1. This vector-based approach enables powerful mathematical operations and transformations.
 
+#### Basic Color Creation
+
 ```typescript
-// RGB color representations
+// RGB color representations using constructor
 const red = new Vec3(1, 0, 0);        // Pure red
 const green = new Vec3(0, 1, 0);      // Pure green
 const blue = new Vec3(0, 0, 1);       // Pure blue
@@ -83,7 +85,72 @@ const gray = new Vec3(0.5, 0.5, 0.5); // 50% gray
 const translucentRed = new Vec4(1, 0, 0, 0.5); // 50% transparent red
 ```
 
-See the [Vec3](https://github.com/fimbul-works/vec/blob/main/VEC3.md) and [Vec4](https://github.com/fimbul-works/vec/blob/main/VEC4.md) API documentation for a full list of available methods and functionality.
+#### Color Component Accessors
+
+The library provides intuitive color-specific accessors that make color manipulation more readable:
+
+```typescript
+// RGB component access - individual channels
+const color = new Vec3(0.8, 0.4, 0.2);
+console.log(color.r); // 0.8 (red component)
+console.log(color.g); // 0.4 (green component)
+console.log(color.b); // 0.2 (blue component)
+
+// Modify individual color channels
+color.r = 1.0;  // Make it more red
+color.g *= 0.5; // Reduce green by half
+color.b += 0.1; // Add a bit more blue
+
+// RGB array access - all channels at once
+const [r, g, b] = color.rgb; // Get as array
+color.rgb = [0.9, 0.7, 0.3]; // Set all at once
+
+// RGBA color manipulation
+const colorWithAlpha = new Vec4(0.6, 0.8, 0.2, 0.9);
+console.log(colorWithAlpha.r); // 0.6 (red)
+console.log(colorWithAlpha.g); // 0.8 (green)
+console.log(colorWithAlpha.b); // 0.2 (blue)
+console.log(colorWithAlpha.a); // 0.9 (alpha/transparency)
+
+// RGBA array access
+const [r, g, b, a] = colorWithAlpha.rgba; // Get all components
+colorWithAlpha.rgba = [1, 0.5, 0, 0.8];   // Set all components
+
+// Create colors using color accessors
+const customColor = new Vec3();
+customColor.r = 0.7; // 70% red
+customColor.g = 0.3; // 30% green
+customColor.b = 0.9; // 90% blue
+
+// Transparency manipulation
+const opaqueColor = new Vec4();
+opaqueColor.rgb = [0.4, 0.8, 0.6]; // Set RGB
+opaqueColor.a = 0.75;              // Set alpha separately
+```
+
+#### Vector Operations with Color Context
+
+Since colors are vectors, you can use all vector operations while thinking in color terms:
+
+```typescript
+// Color blending using vector addition
+const warmColor = new Vec3();
+warmColor.rgb = [1, 0.6, 0.2]; // Orange
+
+const coolColor = new Vec3();
+coolColor.rgb = [0.2, 0.6, 1]; // Blue
+
+// Mix colors (vector addition + scaling)
+const mixed = warmColor.add(coolColor).scale(0.5);
+
+// Calculate color distance (vector magnitude)
+const colorDistance = warmColor.subtract(coolColor).magnitude;
+
+// Normalize color intensity while preserving hue relationships
+const normalizedColor = warmColor.normalize();
+```
+
+See the [Vec3](https://github.com/fimbul-works/vec/blob/main/VEC3.md) and [Vec4](https://github.com/fimbul-works/vec/blob/main/VEC4.md) API documentation for a full list of available vector methods and functionality that can be applied to colors.
 
 ### Types and Interfaces
 
@@ -125,13 +192,13 @@ See [Color String Examples](#color-string-examples) for usage patterns.
 
 ```typescript
 // Main conversion functions
-rgbToHSL(rgb: Vec3): Vec3    // For intuitive color manipulation
+rgbToHSL(rgb: Vec3): Vec3   // For intuitive color manipulation
 hslToRGB(hsl: Vec3): Vec3
-rgbToLAB(rgb: Vec3): Vec3    // For precise color comparisons
+rgbToLAB(rgb: Vec3): Vec3   // For precise color comparisons
 labToRGB(lab: Vec3): Vec3
-rgbToXYZ(rgb: Vec3): Vec3    // For device-independent color
+rgbToXYZ(rgb: Vec3): Vec3   // For device-independent color
 xyzToRGB(xyz: Vec3): Vec3
-rgbToCMYK(rgb: Vec3): Vec4   // For print applications
+rgbToCMYK(rgb: Vec3): Vec4  // For print applications
 cmykToRGB(cmyk: Vec4): Vec3
 ```
 
@@ -353,36 +420,36 @@ The library supports multiple color spaces for different use cases.
 Standard color space for digital displays.
 
 ```typescript
-rgbToHSL(rgb: Vec3): Vec3       // Convert to HSL
-parseRGB(str: string): Vec3     // Parse RGB string
-toRGB(color: Vec3): string      // Format as RGB string
+rgbToHSL(rgb: Vec3): Vec3   // Convert to HSL
+parseRGB(str: string): Vec3 // Parse RGB string
+toRGB(color: Vec3): string  // Format as RGB string
 ```
 
 ### HSL (Human-Readable)
 Intuitive color space for manipulation.
 
 ```typescript
-hslToRGB(hsl: Vec3): Vec3       // Convert to RGB
-parseHSL(str: string): Vec3     // Parse HSL string
-toHSL(color: Vec3): string      // Format as HSL string
+hslToRGB(hsl: Vec3): Vec3   // Convert to RGB
+parseHSL(str: string): Vec3 // Parse HSL string
+toHSL(color: Vec3): string  // Format as HSL string
 ```
 
 ### LAB/XYZ (Color Matching)
 Device-independent spaces for precise color calculations.
 
 ```typescript
-rgbToLAB(rgb: Vec3): Vec3      // Convert RGB to LAB
-labToRGB(lab: Vec3): Vec3      // Convert LAB to RGB
-rgbToXYZ(rgb: Vec3): Vec3      // Convert RGB to XYZ
-xyzToRGB(xyz: Vec3): Vec3      // Convert XYZ to RGB
+rgbToLAB(rgb: Vec3): Vec3 // Convert RGB to LAB
+labToRGB(lab: Vec3): Vec3 // Convert LAB to RGB
+rgbToXYZ(rgb: Vec3): Vec3 // Convert RGB to XYZ
+xyzToRGB(xyz: Vec3): Vec3 // Convert XYZ to RGB
 ```
 
 ### CMYK (Print)
 Color space for print applications.
 
 ```typescript
-rgbToCMYK(rgb: Vec3): Vec4     // Convert RGB to CMYK
-cmykToRGB(cmyk: Vec4): Vec3    // Convert CMYK to RGB
+rgbToCMYK(rgb: Vec3): Vec4  // Convert RGB to CMYK
+cmykToRGB(cmyk: Vec4): Vec3 // Convert CMYK to RGB
 ```
 
 See [Color Space Conversion Examples](#color-space-conversion-examples) for detailed usage.
@@ -391,8 +458,8 @@ See [Color Space Conversion Examples](#color-space-conversion-examples) for deta
 Color temperature calculations in Kelvin.
 
 ```typescript
-kelvinToRGB(kelvin: number): Vec3    // Convert temperature to RGB
-estimateColorTemperature(rgb: Vec3): number | null  // Estimate temperature
+kelvinToRGB(kelvin: number): Vec3                  // Convert temperature to RGB
+estimateColorTemperature(rgb: Vec3): number | null // Estimate temperature
 ```
 
 See [Temperature Manipulation Examples](#temperature-manipulation-examples) for detailed usage.
@@ -455,11 +522,11 @@ The cosine gradient function uses four Vec3 parameters to control the gradient:
 
 ```typescript
 cosineGradient(
-  t: number,     // Position in gradient (0 to 1)
-  a: Vec3,       // Center of oscillation
-  b: Vec3,       // Amplitude
-  c: Vec3,       // Frequency
-  d: Vec3        // Phase
+  t: number, // Position in gradient (0 to 1)
+  a: Vec3,   // Center of oscillation
+  b: Vec3,   // Amplitude
+  c: Vec3,   // Frequency
+  d: Vec3    // Phase
 ): Vec3
 ```
 
@@ -486,8 +553,8 @@ const color3 = parseColor('hsl(0, 100%, 50%)');
 
 // Format-specific parsing
 try {
-  const hex = parseHex('#ff0000');     // From CSS
-  const rgb = parseRGB('rgb(255,0,0)'); // From Canvas
+  const hex = parseHex('#ff0000');         // From CSS
+  const rgb = parseRGB('rgb(255,0,0)');    // From Canvas
   const hsl = parseHSL('hsl(0,100%,50%)'); // From color picker
 } catch (error) {
   console.error('Invalid color format');
@@ -503,9 +570,9 @@ import { colorToString } from '@fimbul-works/vec-color';
 const color = new Vec3(1, 0, 0); // Red
 
 // Different format outputs
-const hex = colorToString(color, { format: 'hex' });           // "#ff0000"
-const rgb = colorToString(color, { format: 'rgb' });          // "rgb(255, 0, 0)"
-const hsl = colorToString(color, { format: 'hsl' });          // "hsl(0, 100%, 50%)"
+const hex = colorToString(color, { format: 'hex' }); // "#ff0000"
+const rgb = colorToString(color, { format: 'rgb' }); // "rgb(255, 0, 0)"
+const hsl = colorToString(color, { format: 'hsl' }); // "hsl(0, 100%, 50%)"
 
 // With alpha
 const rgba = colorToString(color, { format: 'rgb', alpha: 0.5 }); // "rgba(255, 0, 0, 0.5)"
@@ -559,24 +626,24 @@ import {
 const blue = new Vec3(0.2, 0.4, 0.8);
 
 // Basic effects
-const tinted = tint(blue, 0.3);      // 30% lighter
-const shaded = shade(blue, 0.3);     // 30% darker
-const toned = tone(blue, 0.3);       // 30% more muted
+const tinted = tint(blue, 0.3);  // 30% lighter
+const shaded = shade(blue, 0.3); // 30% darker
+const toned = tone(blue, 0.3);   // 30% more muted
 
 // Photo effects
-const sepiaTone = sepia(blue, 0.8);  // Strong sepia effect
-const bw = grayscale(blue);          // Black and white
-const negative = invert(blue);        // Color negative
+const sepiaTone = sepia(blue, 0.8); // Strong sepia effect
+const bw = grayscale(blue);         // Black and white
+const negative = invert(blue);      // Color negative
 
 // Creating a vintage effect
 function vintageEffect(color: Vec3): Vec3 {
   // Apply multiple effects in sequence
   return sepia(
     tone(
-      tint(color, 0.1),  // Slightly lighter
-      0.2                // Slightly muted
+      tint(color, 0.1), // Slightly lighter
+      0.2               // Slightly muted
     ),
-    0.5                    // Medium sepia
+    0.5                 // Medium sepia
   );
 }
 
@@ -606,8 +673,8 @@ import {
 
 // Basic alpha handling
 const red = new Vec3(1, 0, 0);
-const transparentRed = withAlpha(red, 0.5);        // 50% transparent
-const opaqueRed = withAlpha(red);                  // Fully opaque
+const transparentRed = withAlpha(red, 0.5); // 50% transparent
+const opaqueRed = withAlpha(red);           // Fully opaque
 
 // Premultiplied alpha operations
 const premultiplied = toPremultipliedAlpha(red, 0.5);
@@ -633,17 +700,17 @@ import {
 } from '@fimbul-works/vec-color';
 
 // RGB blending
-const base = new Vec3(0.8, 0.2, 0.2);    // Red
-const blend = new Vec3(0.2, 0.2, 0.8);   // Blue
+const base = new Vec3(0.8, 0.2, 0.2);  // Red
+const blend = new Vec3(0.2, 0.2, 0.8); // Blue
 
-const mixed = mix(base, blend, 0.5);      // 50% mix
+const mixed = mix(base, blend, 0.5);   // 50% mix
 const multiplied = blendMultiply(base, blend);
 const screened = blendScreen(base, blend);
 
 // With alpha support
 const baseA = new Vec4(0.8, 0.2, 0.2, 0.5);  // Semi-transparent red
 const blendA = new Vec4(0.2, 0.2, 0.8, 0.8); // More opaque blue
-const result = blendOverlay(baseA, blendA);   // Preserves alpha
+const result = blendOverlay(baseA, blendA);  // Preserves alpha
 ```
 
 #### Color Space Examples
@@ -662,8 +729,8 @@ import {
 } from '@fimbul-works/vec-color';
 
 // RGB to HSL conversion
-const rgb = new Vec3(1, 0, 0);  // Red
-const hsl = rgbToHSL(rgb);      // { h: 0, s: 1, l: 0.5 }
+const rgb = new Vec3(1, 0, 0); // Red
+const hsl = rgbToHSL(rgb);     // { h: 0, s: 1, l: 0.5 }
 const backToRGB = hslToRGB(hsl);
 
 // Color matching with LAB
@@ -671,11 +738,11 @@ const lab = rgbToLAB(rgb);
 const xyz = rgbToXYZ(rgb);
 
 // Print preparation
-const cmyk = rgbToCMYK(rgb);    // { c: 0, m: 1, y: 1, k: 0 }
+const cmyk = rgbToCMYK(rgb); // { c: 0, m: 1, y: 1, k: 0 }
 
 // Color temperature
-const warmLight = kelvinToRGB(2700);    // Warm incandescent
-const daylight = kelvinToRGB(6500);     // Natural daylight
+const warmLight = kelvinToRGB(2700); // Warm incandescent
+const daylight = kelvinToRGB(6500);  // Natural daylight
 ```
 
 #### Temperature Manipulation Examples
@@ -689,29 +756,29 @@ import {
 } from '@fimbul-works/vec-color';
 
 // Create colors from temperature
-const candlelight = kelvinToRGB(1900);    // Warm/orange (~1900K)
-const sunlight = kelvinToRGB(5500);       // Neutral daylight (~5500K)
-const bluesky = kelvinToRGB(9000);        // Cool/blue (~9000K)
+const candlelight = kelvinToRGB(1900); // Warm/orange (~1900K)
+const sunlight = kelvinToRGB(5500);    // Neutral daylight (~5500K)
+const bluesky = kelvinToRGB(9000);     // Cool/blue (~9000K)
 
 // Estimate color temperature
-const color = new Vec3(1, 0.8, 0.6);      // Warm color
+const color = new Vec3(1, 0.8, 0.6); // Warm color
 const temp = estimateColorTemperature(color);
 if (temp !== null) {
     console.log(`Color temperature: ${Math.round(temp)}K`);
 }
 
 // Adjust color temperature
-const original = new Vec3(0.8, 0.8, 0.8);  // Neutral gray
+const original = new Vec3(0.8, 0.8, 0.8); // Neutral gray
 
 // Make warmer or cooler
-const warmer = adjustTemperature(original, -2000);  // Shift towards warm
-const cooler = adjustTemperature(original, 2000);   // Shift towards cool
+const warmer = adjustTemperature(original, -2000); // Shift towards warm
+const cooler = adjustTemperature(original, 2000);  // Shift towards cool
 
 // Create a time-of-day sequence
 const timeSequence = [
-    adjustTemperature(original, -3000),  // Dawn (warm)
-    adjustTemperature(original, 2000),   // Midday (cool)
-    adjustTemperature(original, -2500)   // Sunset (warm)
+    adjustTemperature(original, -3000), // Dawn (warm)
+    adjustTemperature(original, 2000),  // Midday (cool)
+    adjustTemperature(original, -2500)  // Sunset (warm)
 ];
 ```
 
@@ -833,9 +900,9 @@ const labColor = rgbToLAB(new Vec3(1, 0, 0));
 const outOfGamut = labToRGB(labColor);
 if (!isInGamut(outOfGamut)) {
   // Choose appropriate mapping strategy
-  const clipped = clipToGamut(outOfGamut);           // Fast
-  const compressed = compressToGamut(outOfGamut);    // Preserves relationships
-  const projected = projectToGamut(outOfGamut);      // Preserves brightness
+  const clipped = clipToGamut(outOfGamut);        // Fast
+  const compressed = compressToGamut(outOfGamut); // Preserves relationships
+  const projected = projectToGamut(outOfGamut);   // Preserves brightness
 }
 
 // Batch processing with gamut mapping
@@ -858,12 +925,12 @@ import {
 
 // Sample image colors
 const imageColors = [
-    new Vec3(0.8, 0.2, 0.2),  // Red
-    new Vec3(0.8, 0.3, 0.2),  // Similar red
-    new Vec3(0.2, 0.7, 0.3),  // Green
-    new Vec3(0.2, 0.2, 0.8),  // Blue
-    new Vec3(0.9, 0.9, 0.9),  // White
-    new Vec3(0.1, 0.1, 0.1),  // Black
+    new Vec3(0.8, 0.2, 0.2), // Red
+    new Vec3(0.8, 0.3, 0.2), // Similar red
+    new Vec3(0.2, 0.7, 0.3), // Green
+    new Vec3(0.2, 0.2, 0.8), // Blue
+    new Vec3(0.9, 0.9, 0.9), // White
+    new Vec3(0.1, 0.1, 0.1), // Black
     // ... more colors from image
 ];
 
@@ -907,9 +974,9 @@ import { debugColor, validateColorSpace } from '@fimbul-works/vec-color';
 
 // Get comprehensive color information
 const debug = debugColor(new Vec3(1, 0, 0));
-console.log(debug.original.hex);        // "#ff0000"
-console.log(debug.characteristics);     // Temperature, classification, etc.
-console.log(debug.accessibility);       // Contrast ratios, WCAG compliance
+console.log(debug.original.hex);    // "#ff0000"
+console.log(debug.characteristics); // Temperature, classification, etc.
+console.log(debug.accessibility);   // Contrast ratios, WCAG compliance
 
 // Validate color values
 const validation = validateColorSpace(color, "RGB");
@@ -934,8 +1001,8 @@ const baseColor = new Vec3(0.2, 0.5, 0.8);
 
 // Generate different schemes
 const complementary = complement(baseColor);
-const analogousColors = analogous(baseColor);     // [base, +30°, -30°]
-const triadicColors = triadic(baseColor);         // [base, +120°, +240°]
+const analogousColors = analogous(baseColor);      // [base, +30°, -30°]
+const triadicColors = triadic(baseColor);          // [base, +120°, +240°]
 const splitColors = splitComplementary(baseColor); // [base, +150°, -150°]
 ```
 
@@ -950,17 +1017,17 @@ import {
 } from '@fimbul-works/vec-color';
 
 // Harmonize single color with reference
-const reference = parseColor('#0066cc');  // Base blue
-const color = parseColor('#ff9900');      // Orange
+const reference = parseColor('#0066cc'); // Base blue
+const color = parseColor('#ff9900');     // Orange
 
 const harmonized = harmonizeColor(color, reference);
 
 // Harmonize entire palette
 const palette = [
-  parseColor('#0066cc'),  // Base blue
-  parseColor('#ff9900'),  // Orange
-  parseColor('#66cc33'),  // Green
-  parseColor('#cc3366')   // Pink
+  parseColor('#0066cc'), // Base blue
+  parseColor('#ff9900'), // Orange
+  parseColor('#66cc33'), // Green
+  parseColor('#cc3366')  // Pink
 ];
 
 // Create accessible, harmonious palette
