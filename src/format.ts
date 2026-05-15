@@ -1,6 +1,5 @@
-import { hslToRGB, rgbToHSL } from "./hsl";
-
 import { Vec3 } from "@fimbul-works/vec";
+import { hslToRGB, rgbToHSL } from "./hsl";
 
 /**
  * Options for color string formatting

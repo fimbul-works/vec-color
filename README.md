@@ -4,6 +4,7 @@ A comprehensive, type-safe color manipulation library for TypeScript that provid
 
 [![npm version](https://badge.fury.io/js/%40fimbul-works%2Fvec-color.svg)](https://www.npmjs.com/package/@fimbul-works/vec-color)
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/microsoft/TypeScript)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@fimbul-works/vec-color)](https://bundlephobia.com/package/@fimbul-works/vec-color)
 
 ## Features
 

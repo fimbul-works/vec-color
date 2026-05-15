@@ -1,7 +1,5 @@
-import { contrastRatio, relativeLuminance } from "./analyze";
-
 import { Vec3 } from "@fimbul-works/vec";
-import { classifyColor } from "./analyze";
+import { classifyColor, contrastRatio, relativeLuminance } from "./analyze";
 import { simulateColorBlindness } from "./colorblind";
 import { colorToString } from "./format";
 import { rgbToHSL } from "./hsl";

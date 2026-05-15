@@ -39,17 +39,28 @@
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
-  "files": ["dist", "README.md", "API.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "API.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "scripts": {
-    "build": "rm -rf dist && pnpm build:esm && pnpm build:cjs",
+    "clean": "rm -rf dist",
+    "clean:bundles": "rm -rf bundles",
+    "build": "pnpm clean && pnpm build:esm && pnpm build:cjs && pnpm build:docs",
     "build:esm": "tsc -p tsconfig.json",
     "build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "format": "npx biome format --write src",
+    "build:bundles": "pnpm clean:bundles && tsdown",
+    "build:all": "pnpm build && pnpm build:bundles && pnpm sizes",
+    "build:docs": "typedoc",
+    "format": "npx biome format --write src *.json",
+    "sizes": "npx bundle-size",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@fimbul-works/vec": "^1.1.0"
+    "@fimbul-works/vec": "^2.0.2"
   },
   "exports": {
     ".": {
@@ -139,7 +150,11 @@
     }
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.4",
-    "typescript": "^5.9.2"
+    "@biomejs/biome": "^2.4.15",
+    "@fimbul-works/bundle-size": "link:../bundle-size",
+    "tsdown": "^0.22.0",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
+    "typescript": "^6.0.3"
   }
 }

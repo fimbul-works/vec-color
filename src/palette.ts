@@ -1,7 +1,6 @@
+import { Vec3 } from "@fimbul-works/vec";
 import { contrastRatio, meetsWCAGRequirements, relativeLuminance } from "./analyze";
 import { hslToRGB, rgbToHSL } from "./hsl";
-
-import { Vec3 } from "@fimbul-works/vec";
 import { harmonizeColor } from "./transform";
 
 /**

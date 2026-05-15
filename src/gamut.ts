@@ -1,6 +1,5 @@
-import { labToRGB, rgbToLAB } from "./lab";
-
 import { Vec3 } from "@fimbul-works/vec";
+import { labToRGB, rgbToLAB } from "./lab";
 
 /**
  * Checks if a color is within the sRGB gamut

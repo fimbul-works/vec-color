@@ -1,9 +1,8 @@
-import { estimateColorTemperature, kelvinToRGB } from "./kelvin";
-import { hslToRGB, rgbToHSL } from "./hsl";
-import { labToRGB, rgbToLAB } from "./lab";
-
 import { Vec3 } from "@fimbul-works/vec";
 import { mix } from "./blend";
+import { hslToRGB, rgbToHSL } from "./hsl";
+import { estimateColorTemperature, kelvinToRGB } from "./kelvin";
+import { labToRGB, rgbToLAB } from "./lab";
 
 /**
  * Converts a color to grayscale using luminance weights

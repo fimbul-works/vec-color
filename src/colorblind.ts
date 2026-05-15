@@ -1,7 +1,6 @@
-import { hslToRGB, rgbToHSL } from "./hsl";
-
 import { Vec3 } from "@fimbul-works/vec";
 import { calculateColorSimilarityLab } from "./analyze";
+import { hslToRGB, rgbToHSL } from "./hsl";
 
 type ColorBlindnessType = keyof typeof SIMULATION_MATRICES;
 
